@@ -1,48 +1,70 @@
 import React from 'react';
-import { View, Text, StyleSheet, Button, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ImageBackground,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ProfileStackParamList } from '../navigation/ProfileNavigator';
 import { useAuth } from '../context/AuthContext';
 
 const ProfileScreen = () => {
   const navigation = useNavigation<any>();
-  const { logout, user } = useAuth(); // предполагается, что ты хранишь данные о пользователе
+  const { logout, user } = useAuth();
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={require('../../assets/avatar.png')}
-        style={styles.avatar}
-      />
-      <Text style={styles.name}>Привет, {user?.username || 'Гость'}!</Text>
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Мои экскурсии"
-          onPress={() => navigation.navigate('MyExcursions')}
+    <ImageBackground
+      source={require('../../assets/1633925944.jpg')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <Image
+          source={require('../../assets/avatar.png')}
+          style={styles.avatar}
         />
-        <View style={styles.space} />
-        <Button
-          title="Мои заказы"
-          onPress={() => navigation.navigate('MyOrders')}
+        <Text style={styles.name}>Привет, {user?.username || 'Гость'}!</Text>
 
-        />
-        <View style={styles.space} />
-        <Button title="Выйти" onPress={logout} />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('MyExcursions')}
+          >
+            <Text style={styles.buttonText}>Мои экскурсии</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('MyOrders')}
+          >
+            <Text style={styles.buttonText}>Мои заказы</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={logout}>
+            <Text style={styles.buttonText}>Выйти</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
 export default ProfileScreen;
 
+
+
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.50)',
     alignItems: 'center',
     paddingTop: 40,
-    backgroundColor: '#fff',
+    paddingHorizontal: 20,
   },
   avatar: {
     width: 100,
@@ -56,9 +78,18 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   buttonContainer: {
-    width: '80%',
+    width: '100%',
+    gap: 12,
   },
-  space: {
-    height: 12,
+  button: {
+    backgroundColor: 'rgba(178, 34, 34, 0.85)',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

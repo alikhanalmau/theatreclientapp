@@ -76,7 +76,7 @@ const AppNavigator = () => {
             <Stack.Screen
               name="Profile"
               component={ProfileScreen}
-              options={{ title: 'Профиль' }}
+              options={{ title: 'Профиль', headerShown: false }}
             />
           </>
         ) : (

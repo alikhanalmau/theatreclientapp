@@ -14,25 +14,35 @@ export type ProfileStackParamList = {
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
 
 const ProfileNavigator = () => {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="ProfileMain"
-        component={ProfileScreen}
-        options={{ title: 'Профиль' }}
-      />
-      <Stack.Screen
-        name="MyExcursions"
-        component={MyExcursionsScreen}
-        options={{ title: 'Мои экскурсии' }}
-      />
-      <Stack.Screen
-        name="MyOrders"
-        component={MyOrdersScreen}
-        options={{ title: 'Мои заказы' }}
-      />
-    </Stack.Navigator>
-  );
-};
-
+    return (
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: 'rgba(178, 34, 34, 1)',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: '700',
+          },
+        }}
+      >
+        <Stack.Screen
+          name="ProfileMain"
+          component={ProfileScreen}
+          options={{ title: 'Профиль' }}
+        />
+        <Stack.Screen
+          name="MyExcursions"
+          component={MyExcursionsScreen}
+          options={{ title: 'Мои экскурсии' }}
+        />
+        <Stack.Screen
+          name="MyOrders"
+          component={MyOrdersScreen}
+          options={{ title: 'Мои заказы' }}
+        />
+      </Stack.Navigator>
+    );
+  };
+  
 export default ProfileNavigator;

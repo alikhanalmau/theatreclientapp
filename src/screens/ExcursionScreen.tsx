@@ -10,6 +10,7 @@ import {
   Alert,
   TouchableOpacity,
   Modal,
+  ImageBackground,
 } from 'react-native';
 import API from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -30,50 +31,43 @@ const ExcursionScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [userSlotIds, setUserSlotIds] = useState<number[]>([]);
 
-
   useEffect(() => {
     const fetchSlotsAndOrders = async () => {
       try {
         const token = await AsyncStorage.getItem('accessToken');
-  
-        // Получаем слоты
+
         const slotsResponse = await API.get('/excursion-slots/');
         setSlots(slotsResponse.data);
-  
-        // Получаем заказы пользователя
+
         const ordersResponse = await API.get('/my-excursions/', {
           headers: { Authorization: `Bearer ${token}` },
         });
-  
+
         const bookedSlotIds = ordersResponse.data.map((order: any) => order.slot);
         setUserSlotIds(bookedSlotIds);
-  
       } catch (error) {
         console.error('Ошибка при загрузке:', error);
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchSlotsAndOrders();
   }, []);
-  
 
   const handleSubmit = async () => {
     if (!selectedSlot) return;
-  
+
     try {
       const token = await AsyncStorage.getItem('accessToken');
       await API.post(
         '/excursions/',
         { slot: selectedSlot.id, comment },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-  
+
       Alert.alert('Успешно', 'Вы записались на экскурсию!');
       setComment('');
       setSelectedSlot(null);
@@ -87,7 +81,6 @@ const ExcursionScreen = () => {
       console.error('Ошибка при записи:', error);
     }
   };
-  
 
   const renderItem = ({ item }: { item: ExcursionSlot }) => (
     <TouchableOpacity
@@ -115,45 +108,57 @@ const ExcursionScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Выберите экскурсию:</Text>
-      <FlatList
-        data={slots.filter((slot) => !userSlotIds.includes(slot.id))}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-        contentContainerStyle={styles.list}
-      />
+    <ImageBackground
+      source={require('../../assets/1633925944.jpg')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <Text style={styles.title}>Выберите экскурсию:</Text>
 
+        <FlatList
+          data={slots.filter((slot) => !userSlotIds.includes(slot.id))}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          contentContainerStyle={styles.list}
+        />
 
-      <Modal visible={modalVisible} transparent animationType="slide">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
-              {selectedSlot?.date} в {selectedSlot?.time}
-            </Text>
+        <Modal visible={modalVisible} transparent animationType="slide">
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>
+                {selectedSlot?.date} в {selectedSlot?.time}
+              </Text>
 
-            <TextInput
-              value={comment}
-              onChangeText={setComment}
-              placeholder="Ваш комментарий (необязательно)"
-              style={styles.input}
-              multiline
-            />
+              <TextInput
+                value={comment}
+                onChangeText={setComment}
+                placeholder="Ваш комментарий (необязательно)"
+                style={styles.input}
+                multiline
+              />
 
-            <Button title="Записаться" onPress={handleSubmit} />
-            <Button title="Отмена" onPress={() => setModalVisible(false)} />
+              <Button title="Записаться" onPress={handleSubmit} />
+              <Button title="Отмена" onPress={() => setModalVisible(false)} />
+            </View>
           </View>
-        </View>
-      </Modal>
-    </View>
+        </Modal>
+      </View>
+    </ImageBackground>
   );
 };
 
 export default ExcursionScreen;
 
+
+
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 16,
   },
   loader: {
@@ -170,14 +175,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.95)',
   },
   slotText: {
     fontSize: 16,
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 12,
+    textAlign: 'center',
+    color: '#FFF',
   },
   input: {
     borderWidth: 1,
