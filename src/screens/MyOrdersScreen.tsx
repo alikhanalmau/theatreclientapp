@@ -58,14 +58,30 @@ const MyOrdersScreen = () => {
       data={orders}
       keyExtractor={(item) => item.id.toString()}
       renderItem={renderItem}
-      contentContainerStyle={styles.list}
+      contentContainerStyle={orders.length === 0 ? styles.emptyContainer : styles.list}
+      ListEmptyComponent={
+        <Text style={styles.emptyText}>У вас нет заказов</Text>
+      }
     />
   );
+
 };
 
 export default MyOrdersScreen;
 
 const styles = StyleSheet.create({
+  emptyContainer: {
+  flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#555',
+    textAlign: 'center',
+  },
+
   list: {
     padding: 16,
   },

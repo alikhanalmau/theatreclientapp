@@ -6,7 +6,8 @@ type AuthContextType = {
   isLoading: boolean;
   refreshAuth: () => Promise<void>;
   logout: () => Promise<void>;
-  user: { username: string } | null; 
+  user: { username: string } | null;
+  setUser: (user: { username: string } | null) => void; 
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -14,7 +15,8 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   refreshAuth: async () => {},
   logout: async () => {},
-  user: null, 
+  user: null,
+  setUser: () => {},
 });
 
 
@@ -29,8 +31,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const token = await AsyncStorage.getItem('accessToken');
     if (token) {
       setIsLoggedIn(true);
-      // Пример: извлекаем имя из AsyncStorage или расшифровываем токен
-      const username = await AsyncStorage.getItem('username'); // если хранишь имя
+      const username = await AsyncStorage.getItem('username'); 
       setUser(username ? { username } : null);
     } else {
       setIsLoggedIn(false);
@@ -52,7 +53,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, isLoading, refreshAuth, logout, user }}>
+    <AuthContext.Provider value={{ isLoggedIn, isLoading, refreshAuth, logout, user, setUser }}>
       {children}
     </AuthContext.Provider>
 

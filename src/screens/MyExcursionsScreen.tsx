@@ -77,11 +77,19 @@ const MyExcursionsScreen = () => {
         </View>
       );
     }
-
+  
+    const formattedDate = new Date(item.slot.date).toLocaleDateString('ru-RU', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+  
+    const formattedTime = item.slot.time?.slice(0, 5);
+  
     return (
       <View style={styles.card}>
         <Text style={styles.title}>
-          Экскурсия: {item.slot.date} в {item.slot.time}
+          Экскурсия: {formattedDate} в {formattedTime}
         </Text>
         <Text>Комментарий: {item.comment || '—'}</Text>
         <Text style={styles.date}>
@@ -97,6 +105,7 @@ const MyExcursionsScreen = () => {
     );
   };
 
+
   if (loading) {
     return (
       <View style={styles.loader}>
@@ -110,15 +119,28 @@ const MyExcursionsScreen = () => {
       data={excursions}
       keyExtractor={(item) => item.id.toString()}
       renderItem={renderItem}
-      contentContainerStyle={styles.list}
+      contentContainerStyle={excursions.length === 0 ? styles.emptyContainer : styles.list}
       ListEmptyComponent={<Text style={styles.empty}>Заявок пока нет</Text>}
     />
   );
+
 };
 
 export default MyExcursionsScreen;
 
 const styles = StyleSheet.create({
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  empty: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+  },
+
   list: {
     padding: 16,
   },
@@ -140,11 +162,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  empty: {
-    textAlign: 'center',
-    marginTop: 32,
-    color: '#999',
   },
   cancelBtn: {
     marginTop: 10,

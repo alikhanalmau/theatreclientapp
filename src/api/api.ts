@@ -34,11 +34,9 @@ API.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return API(originalRequest);
       } else {
-        // 🔴 refreshToken недействителен — делаем авто-выход
         await AsyncStorage.removeItem('accessToken');
         await AsyncStorage.removeItem('refreshToken');
 
-        // Переход на Login
         navigate('Login');
 
         return Promise.reject(error);

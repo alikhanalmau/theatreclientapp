@@ -34,7 +34,7 @@ const EventDetailScreen = () => {
       await postReview({ event: event.id, rating, comment });
       setComment('');
       setRating(5);
-      fetchReviews(); // обновим список
+      fetchReviews(); 
     } catch (err) {
       console.error('Ошибка отправки отзыва', err);
     }

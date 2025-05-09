@@ -29,7 +29,7 @@ const ProfileNavigator = () => {
         <Stack.Screen
           name="ProfileMain"
           component={ProfileScreen}
-          options={{ title: 'Профиль' }}
+          options={{ title: 'Профиль', headerShown: false}}
         />
         <Stack.Screen
           name="MyExcursions"

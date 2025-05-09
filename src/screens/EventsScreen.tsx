@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import API from '../api/api';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -48,7 +47,7 @@ const EventsScreen = () => {
       <View style={styles.card}>
         <Image source={{ uri: item.image }} style={styles.image} />
         <Text style={styles.title}>{item.title}</Text>
-        <Text>{item.description}</Text>
+        <Text style={styles.description}>{item.description}</Text>
         <Text style={styles.date}>{new Date(item.date).toLocaleString()}</Text>
       </View>
     </TouchableOpacity>
@@ -94,17 +93,13 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.60)', // или прозрачность для читаемости
+    backgroundColor: 'rgba(0,0,0,0.55)',
   },
   header: {
-    height: 100,
-    backgroundColor: 'rgba(178, 34, 34, 0.5)',
-    opacity: 90,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: 'rgba(178, 34, 34, 0.85)',
+    paddingVertical: 20,
     paddingHorizontal: 16,
-    paddingTop: 15,
-    paddingBottom: 15,
+    alignItems: 'center',
   },
   headerText: {
     color: '#fff',
@@ -119,22 +114,32 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: 20,
-    padding: 12,
-    backgroundColor: 'rgba(255,255,255,0.90)',
-    borderRadius: 8,
+    padding: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.93)',
+    borderRadius: 12,
     elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
   },
   image: {
     height: 180,
-    borderRadius: 8,
+    borderRadius: 10,
     marginBottom: 10,
   },
   title: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  description: {
+    fontSize: 15,
+    color: '#333',
+    marginBottom: 6,
   },
   date: {
-    marginTop: 6,
+    fontSize: 13,
     color: '#666',
   },
   loader: {

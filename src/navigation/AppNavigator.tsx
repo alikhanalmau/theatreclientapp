@@ -51,7 +51,7 @@ const AppNavigator = () => {
             <Stack.Screen
               name="MainTabs"
               component={TabNavigator}
-              options={{ headerShown: false }} // скрываем только на главных вкладках
+              options={{ headerShown: false }}
             />
             <Stack.Screen
               name="Events"
@@ -61,7 +61,7 @@ const AppNavigator = () => {
             <Stack.Screen
               name="EventDetail"
               component={EventDetailScreen}
-              options={{ title: 'Мероприятие' }} // ✅ покажет заголовок и кнопку назад
+              options={{ title: 'Мероприятие' }} 
             />
             <Stack.Screen
               name="TicketOrder"

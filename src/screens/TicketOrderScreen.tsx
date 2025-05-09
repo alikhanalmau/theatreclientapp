@@ -29,12 +29,12 @@ const TicketOrderScreen = () => {
   const handleBooking = async () => {
     try {
       await API.post('/tickets/', {
-        event: event.id,
+        event: event,
         count: parseInt(count, 10),
         comment,
       });
 
-      setModalVisible(true); // Открываем модалку
+      setModalVisible(true);
 
       setCount('1');
       setComment('');
@@ -46,7 +46,7 @@ const TicketOrderScreen = () => {
 
   const handleModalClose = () => {
     setModalVisible(false);
-    navigation.goBack(); // Возвращаемся назад после закрытия
+    navigation.goBack(); 
   };
 
   return (
@@ -73,7 +73,6 @@ const TicketOrderScreen = () => {
 
       <Button title="Забронировать" onPress={handleBooking} />
 
-      {/* ✅ Модальное окно */}
       <Modal
         visible={modalVisible}
         transparent
@@ -126,7 +125,6 @@ const styles = StyleSheet.create({
     minHeight: 80,
     textAlignVertical: 'top',
   },
-  // Modal
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
