@@ -41,6 +41,15 @@ const EventsScreen = () => {
 
     fetchEvents();
   }, []);
+  const formatDateRu = (dateStr: string) => {
+    return new Date(dateStr).toLocaleString('ru-RU', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
 
   const renderItem = ({ item }: { item: Event }) => (
     <TouchableOpacity onPress={() => navigation.navigate('EventDetail', { event: item })}>
@@ -48,7 +57,7 @@ const EventsScreen = () => {
         <Image source={{ uri: item.image }} style={styles.image} />
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.description}>{item.description}</Text>
-        <Text style={styles.date}>{new Date(item.date).toLocaleString()}</Text>
+        <Text style={styles.date}>{formatDateRu(item.date)}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -56,7 +65,7 @@ const EventsScreen = () => {
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large"  color="#B10000"/>
       </View>
     );
   }
@@ -67,13 +76,12 @@ const EventsScreen = () => {
       style={styles.background}
       resizeMode="cover"
     >
+      <View style={styles.header}>
+        <Text style={styles.headerText}>
+          Казахский Национальный театр{'\n'}оперы и балета им. Абая
+        </Text>
+      </View>
       <View style={styles.overlay}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>
-            Казахский Национальный театр{'\n'}оперы и балета им. Абая
-          </Text>
-        </View>
-
         <FlatList
           data={events}
           keyExtractor={(item) => item.id.toString()}
@@ -83,6 +91,7 @@ const EventsScreen = () => {
       </View>
     </ImageBackground>
   );
+
 };
 
 export default EventsScreen;
@@ -98,7 +107,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: 'rgba(178, 34, 34, 0.85)',
     paddingVertical: 20,
-    paddingHorizontal: 16,
+    paddingHorizontal: 10,
     alignItems: 'center',
   },
   headerText: {

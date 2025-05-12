@@ -25,18 +25,42 @@ const MyOrdersScreen = () => {
 
     fetchOrders();
   }, []);
+  
+
 
   const renderItem = ({ item }: { item: TicketOrder }) => {
     const formattedDate = item.event?.date
-      ? new Date(item.event.date).toLocaleString()
-      : 'Неизвестно';
+    ? new Date(item.event.date).toLocaleDateString('ru-RU', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : 'Неизвестно';
+    const translateStatus = (status: string) => {
+      switch (status) {
+        case 'reserved':
+          return 'Забронировано';
+        case 'paid':
+          return 'Оплачено';
+        case 'cancelled':
+          return 'Отменено';
+        default:
+          return status;
+      }
+    };
+
   
     return (
       <View style={styles.card}>
         <Text style={styles.title}>{item.event?.title || 'Без названия'}</Text>
         <Text style={styles.label}>🎭 Дата спектакля: <Text style={styles.value}>{formattedDate}</Text></Text>
         <Text style={styles.label}>🎫 Кол-во билетов: <Text style={styles.value}>{item.count}</Text></Text>
-        <Text style={styles.label}>📌 Статус: <Text style={styles.value}>{item.status}</Text></Text>
+        <Text style={styles.label}>
+          📌 Статус: <Text style={styles.value}>{translateStatus(item.status)}</Text>
+        </Text>
+
         {item.comment ? (
           <Text style={styles.label}>💬 Комментарий: <Text style={styles.value}>{item.comment}</Text></Text>
         ) : null}
@@ -48,7 +72,7 @@ const MyOrdersScreen = () => {
   if (loading) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large"  color="#B10000"/>
       </View>
     );
   }

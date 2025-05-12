@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TextInput, Button, FlatList } from 'react-native';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ScrollView,
+  TextInput,
+  Pressable,
+} from 'react-native';
+import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { Review } from '../types/models';
 import { getReviewsForEvent, postReview } from '../services/reviews';
-import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
 
 type EventDetailRouteProp = RouteProp<RootStackParamList, 'EventDetail'>;
 
@@ -18,6 +24,10 @@ const EventDetailScreen = () => {
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState<number>(5);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const averageRating =
+  reviews.length > 0
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : null;
 
 
   const fetchReviews = async () => {
@@ -34,7 +44,7 @@ const EventDetailScreen = () => {
       await postReview({ event: event.id, rating, comment });
       setComment('');
       setRating(5);
-      fetchReviews(); 
+      fetchReviews();
     } catch (err) {
       console.error('Ошибка отправки отзыва', err);
     }
@@ -44,18 +54,32 @@ const EventDetailScreen = () => {
     fetchReviews();
   }, []);
 
+  const formatDateRu = (dateStr: string) => {
+    return new Date(dateStr).toLocaleString('ru-RU', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   return (
     <ScrollView style={styles.container}>
       <Image source={{ uri: event.image }} style={styles.image} />
       <Text style={styles.title}>{event.title}</Text>
-      <Text style={styles.date}>{new Date(event.date).toLocaleString()}</Text>
-      <Text style={styles.description}>{event.description}</Text>
-      <Button
-        title="Забронировать билет"
-        color="#13447E"
-        onPress={() => navigation.navigate('TicketOrder', { event })}
-      />
+      <Text style={styles.date}>{formatDateRu(event.date)}</Text>
+      {averageRating ? (
+        <Text style={styles.rating}>Рейтинг: {averageRating} / 5</Text>
+      ) : (
+        <Text style={styles.rating}>Рейтинг: нет данных</Text>
+      )}
 
+      <Text style={styles.description}>{event.description}</Text>
+
+      <Pressable style={styles.button} onPress={() => navigation.navigate('TicketOrder', { event })}>
+        <Text style={styles.buttonText}>Забронировать билет</Text>
+      </Pressable>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Оставить отзыв</Text>
@@ -73,7 +97,9 @@ const EventDetailScreen = () => {
           onChangeText={(val) => setRating(Number(val))}
           style={styles.input}
         />
-        <Button title="Отправить" onPress={handleSubmit} />
+        <Pressable style={styles.buttonAlt} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>Отправить</Text>
+        </Pressable>
       </View>
 
       <View style={styles.section}>
@@ -83,9 +109,7 @@ const EventDetailScreen = () => {
             <Text style={styles.reviewUser}>{r.user.username}</Text>
             <Text style={styles.reviewRating}>Оценка: {r.rating}</Text>
             <Text>{r.comment}</Text>
-            <Text style={styles.reviewDate}>
-              {new Date(r.created_at).toLocaleString()}
-            </Text>
+            <Text style={styles.reviewDate}>{formatDateRu(r.created_at)}</Text>
           </View>
         ))}
       </View>
@@ -95,11 +119,18 @@ const EventDetailScreen = () => {
 
 export default EventDetailScreen;
 
-
 const styles = StyleSheet.create({
+  rating: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#13447E',
+    marginBottom: 12,
+  },
+
   container: {
     padding: 16,
     backgroundColor: '#fff',
+    flex: 1,
   },
   image: {
     height: 200,
@@ -113,11 +144,30 @@ const styles = StyleSheet.create({
   },
   date: {
     color: '#777',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   description: {
     fontSize: 16,
-    marginBottom: 16,
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#B10000',
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  buttonAlt: {
+    backgroundColor: '#13447E',
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   section: {
     marginTop: 24,
@@ -133,6 +183,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     marginBottom: 8,
+    fontSize: 16,
   },
   review: {
     backgroundColor: '#f1f1f1',

@@ -8,11 +8,18 @@ import {
   TouchableOpacity,
   ImageBackground,
   Pressable,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { Animated } from 'react-native';
+
+
+const screenHeight = Dimensions.get('window').height;
 
 const RegisterScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -52,47 +59,45 @@ const RegisterScreen = () => {
 
   const handleRegister = async () => {
     if (!validate()) return;
-    
+
     try {
       await axios.post('https://theatreservice.onrender.com/api/register/', {
         username,
         email,
         password,
       });
-    
+
       Alert.alert('Успешно!', 'Теперь войдите в аккаунт');
       navigation.replace('Login');
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.error('Ошибка регистрации:', error.response?.data || error.message);
-      
+
         const responseErrors = error.response?.data;
         const newErrors: typeof errors = {};
-      
+
         if (responseErrors?.username?.[0]) {
           const message = responseErrors.username[0];
-          if (message === 'A user with that username already exists.') {
-            newErrors.username = 'Пользователь с таким именем уже существует';
-          } else {
-            newErrors.username = message;
-          }
+          newErrors.username =
+            message === 'A user with that username already exists.'
+              ? 'Пользователь с таким именем уже существует'
+              : message;
         }
-      
+
         if (responseErrors?.email?.[0]) {
           const message = responseErrors.email[0];
-          if (message === 'A user is already registered with this e-mail address.') {
-            newErrors.email = 'Пользователь с таким email уже зарегистрирован';
-          } else {
-            newErrors.email = message;
-          }
+          newErrors.email =
+            message === 'A user is already registered with this e-mail address.'
+              ? 'Пользователь с таким email уже зарегистрирован'
+              : message;
         }
-      
+
         if (responseErrors?.password?.[0]) {
           newErrors.password = responseErrors.password[0];
         }
-      
+
         setErrors(newErrors);
-      
+
         if (Object.keys(newErrors).length === 0) {
           Alert.alert('Ошибка', 'Проверьте введённые данные');
         }
@@ -103,57 +108,69 @@ const RegisterScreen = () => {
     }
   };
 
-
   return (
     <ImageBackground
       source={require('../../assets/1633925944.jpg')}
       style={styles.background}
       resizeMode="cover"
     >
-      <View style={styles.overlay}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Регистрация</Text>
+      <View style={styles.dimOverlay} />
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.container}
+      >
+        <View style={styles.content}>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>Регистрация</Text>
+          </View>
+
+          <View style={styles.form}>
+            <TextInput
+              style={styles.input}
+              placeholder="Имя пользователя"
+              placeholderTextColor="#aaa"
+              value={username}
+              onChangeText={setUsername}
+            />
+            {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
+
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor="#aaa"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+            />
+            {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+
+            <TextInput
+              style={styles.input}
+              placeholder="Пароль"
+              placeholderTextColor="#aaa"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
+            {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+
+            <Pressable
+              onPress={handleRegister}
+              style={({ pressed }) => [
+                styles.button,
+                pressed && { backgroundColor: 'rgba(178, 34, 34, 0.7)' },
+              ]}
+            >
+              <Text style={styles.buttonText}>Зарегистрироваться</Text>
+            </Pressable>
+
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.link}>Уже есть аккаунт? Войти</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            placeholder="Имя пользователя"
-            placeholderTextColor="#aaa"
-            value={username}
-            onChangeText={setUsername}
-          />
-          {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
-
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="#aaa"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-          />
-          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-
-          <TextInput
-            style={styles.input}
-            placeholder="Пароль"
-            placeholderTextColor="#aaa"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-          {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-
-          <Pressable style={styles.button} onPress={handleRegister}>
-            <Text style={styles.buttonText}>Зарегистрироваться</Text>
-          </Pressable>
-
-          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.link}>Уже есть аккаунт? Войти</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
 };
@@ -162,11 +179,19 @@ export default RegisterScreen;
 
 const styles = StyleSheet.create({
   background: {
+    height: screenHeight,
+    width: '100%',
+    position: 'relative',
+  },
+  dimOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+  },
+  container: {
     flex: 1,
   },
-  overlay: {
+  content: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.60)',
     justifyContent: 'center',
     paddingHorizontal: 24,
   },

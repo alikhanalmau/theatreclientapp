@@ -4,10 +4,11 @@ import {
   Text,
   StyleSheet,
   TextInput,
-  Button,
   Alert,
   Modal,
   Pressable,
+  ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import { RouteProp, useRoute, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -29,13 +30,12 @@ const TicketOrderScreen = () => {
   const handleBooking = async () => {
     try {
       await API.post('/tickets/', {
-        event: event,
+        event: event.id,
         count: parseInt(count, 10),
         comment,
       });
 
       setModalVisible(true);
-
       setCount('1');
       setComment('');
     } catch (err) {
@@ -46,11 +46,11 @@ const TicketOrderScreen = () => {
 
   const handleModalClose = () => {
     setModalVisible(false);
-    navigation.goBack(); 
+    navigation.goBack();
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>{event.title}</Text>
       <Text style={styles.date}>{new Date(event.date).toLocaleString()}</Text>
 
@@ -71,59 +71,95 @@ const TicketOrderScreen = () => {
         placeholder="Необязательно"
       />
 
-      <Button title="Забронировать" onPress={handleBooking} />
+      <Pressable style={styles.button} onPress={handleBooking}>
+        <Text style={styles.buttonText}>Забронировать</Text>
+      </Pressable>
 
       <Modal
         visible={modalVisible}
         transparent
-        animationType="slide"
+        animationType="fade"
         onRequestClose={handleModalClose}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Успешно!</Text>
             <Text style={styles.modalText}>
-              Тут должна быть интеграция с Ticketon, но пока её нет. Билет забронирован.
+              Билет успешно забронирован! {'\n'}(Интеграция с Ticketon будет позже)
             </Text>
-            <Pressable style={styles.modalButton} onPress={handleModalClose}>
-              <Text style={styles.modalButtonText}>Ок</Text>
-            </Pressable>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: '#13447E' }]}
+                onPress={handleModalClose}
+              >
+                <Text style={styles.modalButtonText}>Ок</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
-    </View>
+
+    </ScrollView>
   );
 };
 
 export default TicketOrderScreen;
 
 const styles = StyleSheet.create({
-  container: {
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  modalButton: {
     flex: 1,
+    paddingVertical: 10,
+    marginHorizontal: 5,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+
+  container: {
     padding: 16,
+    backgroundColor: '#fff',
+    flex: 1,
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: '600',
+    marginBottom: 4,
   },
   date: {
-    marginBottom: 20,
-    color: '#666',
+    color: '#777',
+    marginBottom: 16,
   },
   label: {
-    marginTop: 12,
-    marginBottom: 4,
+    marginTop: 16,
+    marginBottom: 6,
     fontSize: 16,
+    fontWeight: '500',
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 6,
+    borderRadius: 8,
     padding: 10,
+    fontSize: 16,
   },
   textarea: {
     minHeight: 80,
     textAlignVertical: 'top',
+  },
+  button: {
+    backgroundColor: '#B10000',
+    marginTop: 24,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   modalOverlay: {
     flex: 1,
@@ -148,12 +184,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  modalButton: {
-    backgroundColor: '#13447E',
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    borderRadius: 8,
-  },
+  
   modalButtonText: {
     color: '#fff',
     fontSize: 16,
