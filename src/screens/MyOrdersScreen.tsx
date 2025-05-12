@@ -61,9 +61,12 @@ const MyOrdersScreen = () => {
           📌 Статус: <Text style={styles.value}>{translateStatus(item.status)}</Text>
         </Text>
 
-        {item.comment ? (
-          <Text style={styles.label}>💬 Комментарий: <Text style={styles.value}>{item.comment}</Text></Text>
+        {item.comment?.trim() ? (
+          <Text style={styles.label}>
+            💬 Комментарий: <Text style={styles.value}>{item.comment}</Text>
+          </Text>
         ) : null}
+
       </View>
     );
   };

@@ -95,7 +95,10 @@ const MyExcursionsScreen = () => {
         <Text style={styles.title}>
           Экскурсия: {formattedDate} в {formattedTime}
         </Text>
-        <Text>Комментарий: {item.comment || '—'}</Text>
+        {item.comment?.trim() ? (
+          <Text>Комментарий: {item.comment}</Text>
+        ) : null}
+
         <Text style={styles.date}>
           Заявка отправлена: {new Date(item.created_at).toLocaleString()}
         </Text>
@@ -129,7 +132,6 @@ const MyExcursionsScreen = () => {
         ListEmptyComponent={<Text style={styles.empty}>Заявок пока нет</Text>}
       />
 
-      {/* 🔽 МОДАЛКА ПОДТВЕРЖДЕНИЯ */}
       <Modal
         visible={modalVisible}
         transparent

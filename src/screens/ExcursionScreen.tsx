@@ -29,6 +29,9 @@ const ExcursionScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userSlotIds, setUserSlotIds] = useState<number[]>([]);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,12 +74,17 @@ const ExcursionScreen = () => {
       setComment('');
       setSelectedSlot(null);
     } catch (error: any) {
+      setModalVisible(false); 
+
       if (error.response?.data?.non_field_errors) {
-        Alert.alert('Ошибка', error.response.data.non_field_errors[0]);
+        setErrorMessage(error.response.data.non_field_errors[0]);
       } else {
-        Alert.alert('Ошибка', 'Не удалось записаться на экскурсию');
+        setErrorMessage('Не удалось записаться на экскурсию');
       }
+    
+      setErrorModalVisible(true); 
     }
+
   };
 
   const renderItem = ({ item }: { item: ExcursionSlot }) => (
@@ -109,6 +117,26 @@ const ExcursionScreen = () => {
       resizeMode="cover"
     >
       <View style={styles.overlay}>
+        <Modal
+          visible={errorModalVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setErrorModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalBox}>
+              <Text style={styles.modalTitle}>Ошибка</Text>
+              <Text style={{ textAlign: 'center', marginBottom: 20 }}>{errorMessage}</Text>
+              <TouchableOpacity
+                style={[styles.button, styles.cancelButton]}
+                onPress={() => setErrorModalVisible(false)}
+              >
+                <Text style={styles.buttonText}>Ок</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
         <Text style={styles.header}>Экскурсии</Text>
 
         <FlatList
