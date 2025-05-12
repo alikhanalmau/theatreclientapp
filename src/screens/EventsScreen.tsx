@@ -8,6 +8,7 @@ import {
   ImageBackground,
   ActivityIndicator,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import API from '../api/api';
 import { useNavigation } from '@react-navigation/native';
@@ -76,18 +77,21 @@ const EventsScreen = () => {
       style={styles.background}
       resizeMode="cover"
     >
-      <View style={styles.header}>
-        <Text style={styles.headerText}>
-          Казахский Национальный театр{'\n'}оперы и балета им. Абая
-        </Text>
-      </View>
       <View style={styles.overlay}>
         <FlatList
           data={events}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderItem}
           contentContainerStyle={styles.list}
+          ListHeaderComponent={
+            <View style={styles.header}>
+              <Text style={styles.headerText}>
+                Казахский Национальный театр{'\n'}оперы и балета им. Абая
+              </Text>
+            </View>
+          }
         />
+
       </View>
     </ImageBackground>
   );
@@ -106,17 +110,31 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: 'rgba(178, 34, 34, 0.85)',
-    paddingVertical: 20,
-    paddingHorizontal: 10,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 5,
     alignItems: 'center',
   },
+
   headerText: {
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
+    fontSize: 18,
+    fontWeight: '600',
     color: '#fff',
-    fontSize: 20,
-    fontWeight: '700',
     textAlign: 'center',
-    lineHeight: 26,
+    lineHeight: 24,
+    letterSpacing: 0.3,
   },
+
+
+
+
   list: {
     padding: 16,
     paddingBottom: 40,
